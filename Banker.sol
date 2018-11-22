@@ -1,4 +1,16 @@
 pragma solidity 0.4.19;
+
+library Math {
+  function max(uint a, uint b) public pure returns (uint) {
+    if (a > b) return a;
+    else return b;
+  }
+  function min(uint a, uint b) public pure returns (uint) {
+    if (a < b) return a;
+    else return b;
+  }
+}
+
 contract Banker {
 
 //    struct Voter {
@@ -14,7 +26,7 @@ contract Banker {
 //    address chairperson;
 
     // Масив позичальників
-    mapping(address => Borrower) public borrowers;
+    mapping(address => uint) public borrowers;
 //    Proposal[] proposals;
     //uint CUrr
     
@@ -23,7 +35,7 @@ contract Banker {
 
     // Перевірка чи ще не позичав і {чи позика не перевищує доступний обєм кредитування}  
     function CanOpenCredit(address Borrower) public returns(bool) {
-      if borrowers[Borrower] > 0 
+      if (borrowers[Borrower] > 0) 
       {
           Error('Already borrowed! Return previous credit first!');
           return false;
@@ -31,26 +43,27 @@ contract Banker {
       return true;
     }
     
-    // Відкриття позики
-    function OpenCredit({address Borrower} uint Amount) {
-        if CanOpenCredit(msg.sender) {
+    // Відкриття позики ///{address Borrower}///
+    function OpenCredit(uint Amount) public {
+        if (CanOpenCredit(msg.sender))
+        {
            borrowers[msg.sender] = Amount; 
         }
     }
     
     // Перевірка кредиту по певному позичальнику
-    function CheckBorrowerCredit(address Borrower) {
-       ShowBorrowerCredit(borrowers[msg.sender]);   
+    function CheckBorrowerCredit(address Borrower) public {
+       ShowBorrowerCredit(borrowers[Borrower]);   
     }
     
     // Закриття кредиту
-    function CloseCredit(address Borrower; uint Amount)
+    function CloseCredit(address Borrower, uint Amount) public
     {
     //???    if msg.sender = contract.owner
       // Перевірка щоб хтось інший не закрив кредит
       
       // Перевірка суми
-      borrowers[msg.sender] -= min(Amount, borrowers[msg.sender]);
+      borrowers[Borrower] -= Math.min(Amount, borrowers[Borrower]);
     }
     
 
